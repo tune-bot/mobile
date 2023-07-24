@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currentSongText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //TODO use jetpack compose
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
