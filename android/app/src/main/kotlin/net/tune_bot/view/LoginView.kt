@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -21,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,75 +48,76 @@ class LoginView(
                     password.isNotBlank() && password.isNotEmpty() && password.length in PASSWORD_LENGTH_RANGE &&
                     if(needsToRegister) confirm == password else true
 
-        Surface {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painterResource(R.drawable.logo_text),
-                    stringResource(R.string.app_name),
-                    modifier = Modifier.width(180.dp)
-                )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painterResource(R.drawable.logo_text_dark),
+                stringResource(R.string.app_name),
+                modifier = Modifier.width(180.dp)
+            )
 
-                TextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
-                    singleLine = true
-                )
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                singleLine = true
+            )
 
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+
+            if (needsToRegister) {
                 TextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
+                    value = confirm,
+                    onValueChange = { confirm = it },
+                    label = { Text("Confirm") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
+            }
 
-                if (needsToRegister) {
-                    TextField(
-                        value = confirm,
-                        onValueChange = { confirm = it },
-                        label = { Text("Confirm") },
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            if (!validate()) {
-                                println("validate failed") //todo present error to user
-                            } else if (needsToRegister) {
-                                User.register(context.api, username, password)
-                            } else {
-                                User.login(context.api, username, password)
-                            }?.let {
-                                it.save(context.userFile())
-                                context.success(it)
-                            }
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if (!validate()) {
+                            println("validate failed") //todo present error to user
+                        } else if (needsToRegister) {
+                            User.register(context.api, username, password)
+                        } else {
+                            User.login(context.api, username, password)
+                        }?.let {
+                            it.save(context.userFile())
+                            context.success(it)
                         }
                     }
-                ) {
-                    Text(if (needsToRegister) "Register" else "Login")
                 }
+            ) {
+                Text(if (needsToRegister) "Register" else "Login")
+            }
 
-                Row {
-                    Text(if (needsToRegister) "Already have an account?" else "Need to create an account?")
+            Row {
+                Text(
+                    if (needsToRegister) "Already have an account?" else "Need to create an account?",
+                    color = Color.White
+                )
 
-                    Text(
-                        "Tap here.",
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .clickable { needsToRegister = !needsToRegister },
-                        color = MaterialTheme.colors.onPrimary
-                    )
-                }
+                Text(
+                    "Tap here.",
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clickable { needsToRegister = !needsToRegister },
+                    color = Color.Blue
+                )
             }
         }
     }

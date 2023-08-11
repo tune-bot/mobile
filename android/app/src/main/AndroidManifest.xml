@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.TuneBot"
-        android:banner="@drawable/banner">
+        android:banner="@drawable/banner_dark">
         <activity
             android:name=".activity.LauncherActivity"
             android:exported="true">

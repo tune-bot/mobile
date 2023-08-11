@@ -77,7 +77,7 @@ class MainView(
                 TopAppBar(
                     title = {
                         Image( // TODO clean up the image
-                            painter = painterResource(R.drawable.text_white),
+                            painter = painterResource(R.drawable.text_dark),
                             contentDescription = stringResource(R.string.app_name),
                             modifier = Modifier.height(24.dp)
                         )
