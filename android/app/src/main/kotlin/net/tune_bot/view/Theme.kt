@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val darkColors = Colors(
-    primary = Color(0xFF990000),
-    primaryVariant = Color(0xFF990000),
+    primary = Color.Maroon,
+    primaryVariant = Color.Maroon,
     onPrimary = Color.White,
-    secondary = Color(0xFF990000),
-    secondaryVariant = Color(0xFF990000),
+    secondary = Color.Maroon,
+    secondaryVariant = Color.Maroon,
     onSecondary = Color.White,
     background = Color.DarkGray,
     onBackground = Color.LightGray,
@@ -39,6 +39,9 @@ private val lightColors = Colors(
     onError = Color(0xFF000000),
     isLight = false
 )
+
+val Color.Companion.Maroon: Color
+    get() = Color(0xFF990000)
 
 @Composable
 fun Theme(
