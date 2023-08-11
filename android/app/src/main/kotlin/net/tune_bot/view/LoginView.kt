@@ -123,6 +123,7 @@ class LoginView(
     }
 
     companion object {
+        // TODO move this to activity
         const val MIN_USERNAME_LENGTH = 1
         const val MAX_USERNAME_LENGTH = 32
         const val MIN_PASSWORD_LENGTH = 8
@@ -130,5 +131,7 @@ class LoginView(
 
         val USERNAME_LENGTH_RANGE = MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH
         val PASSWORD_LENGTH_RANGE = MIN_PASSWORD_LENGTH..MAX_PASSWORD_LENGTH
+
+        // TODO validate characters in user and pass. letter and num in user, letter num and limited chars in pass
     }
 }
