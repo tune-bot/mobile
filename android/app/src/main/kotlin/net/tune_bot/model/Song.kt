@@ -1,6 +1,5 @@
 package net.tune_bot.model
 
-import java.io.Serializable
 import java.util.UUID
 
 data class Song(
@@ -9,4 +8,6 @@ data class Song(
     val artist: String,
     val album: String,
     val year: Int
-): Serializable
+): AbstractModel() {
+
+}

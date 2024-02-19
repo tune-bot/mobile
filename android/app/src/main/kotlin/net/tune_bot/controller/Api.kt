@@ -25,6 +25,7 @@ class Api(promotionLevel: PromotionLevel) {
         var code = HttpURLConnection.HTTP_UNAVAILABLE
 
         try {
+            println(host)
             with(URL("http://$host/" + path.removePrefix("/")).openConnection() as HttpURLConnection) {
                 this.requestMethod = method.name
 
@@ -43,6 +44,8 @@ class Api(promotionLevel: PromotionLevel) {
                             inputLine = it.readLine()
                         }
                     }
+                } else {
+                    println(responseMessage)
                 }
             }
         } catch (e: Throwable) {

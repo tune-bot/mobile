@@ -22,5 +22,5 @@ class LoginActivity: AbstractActivity() {
     }
 
     @Composable
-    override fun Content() = LoginView(this).Frame()
+    override fun Content() = LoginView().Frame(this)
 }

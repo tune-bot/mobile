@@ -9,7 +9,7 @@ class LauncherActivity: AbstractActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getUser()?.let {
+        loadUser()?.let {
             startActivity(
                 Intent(this@LauncherActivity, MainActivity::class.java).apply {
                     putExtra("user", it)

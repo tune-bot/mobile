@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.tune_bot.activity.AbstractActivity
 
 abstract class AbstractView(
     val name: String,
@@ -26,7 +27,7 @@ abstract class AbstractView(
     private val scaffoldState: ScaffoldState
 ) {
     @Composable
-    abstract fun Frame()
+    abstract fun Frame(context: AbstractActivity)
 
     @Composable
     fun DrawerNav(coroutineScope: CoroutineScope) = Card(

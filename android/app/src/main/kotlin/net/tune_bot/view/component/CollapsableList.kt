@@ -1,6 +1,7 @@
 package net.tune_bot.view.component
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -19,43 +20,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-interface CollapsableLazyList {
+interface CollapsableListContent {
+    fun onLongClick()
     @Composable fun Header()
-    val list: List<@Composable () -> Unit>
+    val contentList: List<@Composable () -> Unit>
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CollapsableLazyColumn(
-    sections: List<CollapsableLazyList>,
+fun CollapsableList(
+    listContents: List<CollapsableListContent>,
     modifier: Modifier = Modifier
 ) {
-    val collapsedState = remember(sections) { sections.map { true }.toMutableStateList() }
+    val collapsedState = remember(listContents) { listContents.map { true }.toMutableStateList() }
 
     LazyColumn(modifier) {
-        sections.forEachIndexed { i, dataItem ->
+        listContents.forEachIndexed { i, listContent ->
             val collapsed = collapsedState[i]
+
             item(key = "header_$i") {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable {
-                        collapsedState[i] = !collapsed
-                    }
+                    modifier = Modifier.combinedClickable(
+                        onClick = { collapsedState[i] = !collapsed },
+                        onLongClick = { listContent.onLongClick() }
+                    )
                 ) {
                     Icon(
                         if (collapsed) Icons.Default.KeyboardArrowDown
-                        else Icons.Default.KeyboardArrowUp,
-                        contentDescription = "",
-                        tint = Color.LightGray,
+                            else Icons.Default.KeyboardArrowUp,
+                        if (collapsed) "Expand"
+                            else "Collapse",
+                        tint = Color.LightGray
                     )
-                    dataItem.Header()
+                    listContent.Header()
                 }
                 Divider()
             }
             if (!collapsed) {
-                items(dataItem.list) { Row ->
+                items(listContent.contentList) { content ->
                     Row {
                         Spacer(Modifier.size(24.dp))
-                        Row()
+                        content()
                     }
                     Divider()
                 }

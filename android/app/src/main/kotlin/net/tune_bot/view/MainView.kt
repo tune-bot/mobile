@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -34,6 +33,7 @@ import androidx.navigation.compose.composable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.tune_bot.R
+import net.tune_bot.activity.AbstractActivity
 import net.tune_bot.controller.Api
 import net.tune_bot.controller.MediaPlayer
 import net.tune_bot.model.User
@@ -43,8 +43,7 @@ class MainView(
     private val api: Api,
     private val navController: NavHostController,
     private val coroutineScope: CoroutineScope,
-    private val scaffoldState: ScaffoldState,
-    private val user: User?
+    private val scaffoldState: ScaffoldState
 ): AbstractView(
     name = "main",
     icon = Icons.Default.Home,
@@ -52,11 +51,12 @@ class MainView(
     navController, scaffoldState
 ) {
     @Composable
-    override fun Frame() {
+    override fun Frame(context: AbstractActivity) {
         val views = listOf(
-            QueueView(mediaPlayer, navController, coroutineScope, scaffoldState, user),
-            PlaylistView(mediaPlayer, api, navController, coroutineScope, scaffoldState, user),
-            SettingsView(navController, coroutineScope, scaffoldState, user)
+            QueueView(mediaPlayer, navController, coroutineScope, scaffoldState),
+            PlaylistView(mediaPlayer, api, navController, coroutineScope, scaffoldState),
+            BlacklistView(mediaPlayer, api, navController, coroutineScope, scaffoldState),
+            SettingsView(navController, coroutineScope, scaffoldState)
         )
 
         Scaffold(
@@ -101,11 +101,11 @@ class MainView(
             content = { padding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "queue",
+                    startDestination = "playlist",
                     modifier = Modifier.padding(padding)
                 ) {
                     views.forEach { view ->
-                        composable(view.name) { view.Frame() }
+                        composable(view.name) { view.Frame(context) }
                     }
                 }
             },

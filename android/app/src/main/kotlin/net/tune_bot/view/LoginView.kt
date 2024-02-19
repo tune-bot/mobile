@@ -32,11 +32,9 @@ import net.tune_bot.R
 import net.tune_bot.activity.LoginActivity
 import net.tune_bot.model.User
 
-class LoginView(
-    private val context: LoginActivity
-) {
+class LoginView {
     @Composable
-    fun Frame() {
+    fun Frame(context: LoginActivity) {
         var needsToRegister by remember { mutableStateOf(false) }
 
         var username by remember { mutableStateOf("") }
@@ -97,7 +95,7 @@ class LoginView(
                             User.login(context.api, username, password)
                         }?.let {
                             it.save(context.userFile())
-                            context.success(it)
+                            (context).success(it)
                         }
                     }
                 }

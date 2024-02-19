@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.os.IBinder
 import net.tune_bot.activity.LoginActivity
 
-
 class Authenticator : Service() {
     private lateinit var authenticator: AccountAuthenticator
     

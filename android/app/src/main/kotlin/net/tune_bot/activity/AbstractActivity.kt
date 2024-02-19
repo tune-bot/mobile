@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import net.tune_bot.build.PromotionLevel
 import net.tune_bot.R
 import net.tune_bot.controller.Api
+import net.tune_bot.model.AbstractModel
 import net.tune_bot.model.User
 import net.tune_bot.view.Theme
 import java.io.File
@@ -20,7 +21,7 @@ import java.io.File
 abstract class AbstractActivity: AppCompatActivity() {
     lateinit var api: Api
 
-    private var user: User? = null
+    var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +38,7 @@ abstract class AbstractActivity: AppCompatActivity() {
 
     fun userFile() = File(filesDir, getString(R.string.user_file))
 
-    fun getUser(): User? {
+    fun loadUser(file: File = userFile()): User? {
         user = runBlocking {
             user ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.extras?.getSerializable("user", User::class.java)
@@ -55,7 +56,7 @@ abstract class AbstractActivity: AppCompatActivity() {
                 }
             } ?: try {
                 withContext(Dispatchers.IO) {
-                    User.load(userFile())
+                    AbstractModel.load(file)
                 }
             } catch (e: Throwable) {
                 e.printStackTrace()  // todo do I want stack trace?

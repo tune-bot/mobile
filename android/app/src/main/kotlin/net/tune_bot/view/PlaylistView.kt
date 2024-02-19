@@ -1,62 +1,98 @@
 package net.tune_bot.view
 
-import android.widget.ExpandableListView
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
-import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import net.tune_bot.activity.AbstractActivity
 import net.tune_bot.controller.Api
 import net.tune_bot.controller.MediaPlayer
 import net.tune_bot.model.Playlist
-import net.tune_bot.model.User
-import net.tune_bot.view.component.CollapsableLazyColumn
-import net.tune_bot.view.component.CollapsableLazyList
+import net.tune_bot.view.component.CollapsableList
+import net.tune_bot.view.shared.toCollapsableListContent
 
 class PlaylistView(
     mediaPlayer: MediaPlayer,
-    api: Api,
+    private val api: Api,
     navController: NavController,
     coroutineScope: CoroutineScope,
-    scaffoldState: ScaffoldState,
-    private val user: User?
+    scaffoldState: ScaffoldState
 ): AbstractView(
     name = "playlist",
     icon = Icons.Default.List,
     text = "Playlist",
     navController, scaffoldState
 ) {
-    private fun Playlist.toCollapsableLazyColumn() = object: CollapsableLazyList {
-        @Composable
-        override fun Header() = Row {
-            Checkbox(
-                checked = enabled,
-                onCheckedChange = { enabled = it }
-            ) // todo send api request
-            Text(name)
-        }
-        override val list: List<@Composable () -> Unit> = songs.map {
-            // TODO options to interact with media player and remove song from playlist
-            { Text("${it.title} | ${it.artist} | ${it.album} | ${it.year}") }
-        }
-    }
-
     @Composable
-    override fun Frame() {
-        CollapsableLazyColumn(
-            sections = user?.playlists?.map { it.toCollapsableLazyColumn() } ?: emptyList()
-        ) // TODO option to add new playlist and add songs
+    override fun Frame(context: AbstractActivity) {
+        // todo scrollable
+        Column {
+            var playlists = remember { context.user?.playlists }
+            CollapsableList(
+                playlists?.map { it.toCollapsableListContent() } ?: emptyList()
+            )
 
-        Divider()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                var isCreatingPlaylist by remember { mutableStateOf(false) }
+                Icon(
+                    if(isCreatingPlaylist) Icons.Default.Delete else Icons.Default.Add,
+                    "New Playlist",
+                    Modifier.clickable { isCreatingPlaylist = !isCreatingPlaylist },
+                    Color.LightGray
+                )
+                if(isCreatingPlaylist) {
+                    var newPlaylistName by remember { mutableStateOf("") }
+                    var newPlaylistEnabled by remember { mutableStateOf(true) }
 
-        CollapsableLazyColumn(
-            sections = user?.blacklist?.let { listOf(it.toCollapsableLazyColumn()) } ?: emptyList()
-        )
+                    Checkbox(checked = newPlaylistEnabled, onCheckedChange = { newPlaylistEnabled = it })
+                    TextField(
+                        value = newPlaylistName,
+                        onValueChange = { newPlaylistName = it },
+                        label = { Text("Playlist Name") },
+                        singleLine = true
+                    )
+                    Button(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                context.loadUser()?.let { user ->
+                                    val p = user.id?.let{ userId ->
+                                        Playlist.create(api, userId, Playlist(null, newPlaylistName, newPlaylistEnabled))
+                                    }
+                                    isCreatingPlaylist = false
+                                    p?.let { context.user?.playlists?.add(it) }
+                                    playlists = context.user?.playlists
+                                    context.user?.save(context.userFile())
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Create")
+                    }
+                } else {
+                    Text("Create New Playlist")
+                }
+            }
+        }
     }
 }

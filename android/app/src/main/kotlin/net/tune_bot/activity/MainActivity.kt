@@ -17,7 +17,6 @@ class MainActivity: AbstractActivity() {
         remember { api },
         rememberNavController(),
         rememberCoroutineScope(),
-        rememberScaffoldState(),
-        remember { getUser() }
-    ).Frame()
+        rememberScaffoldState()
+    ).Frame(this)
 }
